@@ -27,7 +27,7 @@
 (function ($, window) {
 
 	"use strict";
-
+    
 	var BeforeAfter = function( elmt, params ){
 
 		//Declaration of variables
