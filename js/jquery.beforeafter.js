@@ -17,7 +17,7 @@
  * Thanks to Nicolas Riciotti aka Twode
  * Supports : IE6/7/8/9/10, FF, Chrome, Opera, Safari, iOS, Android, Window 8
  *
- * Copyright (c) 2012 Joris DANIEL
+ * Copyright (c) 2013 Joris DANIEL
  * Licensed under the MIT License: http://www.opensource.org/licenses/mit-license.php
  *
  *	Sample usage
