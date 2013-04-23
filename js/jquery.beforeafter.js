@@ -50,28 +50,28 @@
 			timer 			= null,
 			$element 		= $(elmt),
 			$picture 		= $(elmt).find('.active'),
-			heightElement 	= parseInt( $element.height() ),
-			widthElement 	= parseInt( $element.width() );
+			heightElement 		= parseInt( $element.height() ),
+			widthElement 		= parseInt( $element.width() );
 
 
-		var orientation 	= '',
-			attrToAnimate 	= '',
-			widthHeight 	= '',
+		var orientation 		= '',
+			attrToAnimate 		= '',
+			widthHeight 		= '',
 			hasTouch 		= 'ontouchstart' in document.documentElement,
-			hasMSPointer    = window.navigator.msPointerEnabled,
+			hasMSPointer    	= window.navigator.msPointerEnabled,
 			events 			= hasTouch  ? 'touchmove' : (hasMSPointer ? 'MSPointerMove' : 'mousemove');
 
 		if (params.direction == 'ltr' || params.direction == 'rtl') {
 			
-			orientation 	= "horizontal";
-			attrToAnimate 	= "left";
-			widthHeight 	= 'width';
+			orientation 		= "horizontal";
+			attrToAnimate 		= "left";
+			widthHeight 		= 'width';
 
 		} else if (params.direction == 'ttb' || params.direction == 'btt') {
 			
-			orientation 	= "vertical";
-			attrToAnimate 	= "top";
-			widthHeight 	= 'height';
+			orientation 		= "vertical";
+			attrToAnimate 		= "top";
+			widthHeight 		= 'height';
 
 		}
 
