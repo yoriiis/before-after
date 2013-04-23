@@ -41,8 +41,8 @@
 	var BeforeAfter = function( elmt, params ){
 
 		var params = $.extend({
-			cursor 			: false, 			//A div following the mouse
-			direction		: 'ttb', 			//ttb, btt, ltr, rtl
+			cursor 			: false, 	//A div following the mouse
+			direction		: 'ttb', 	//ttb, btt, ltr, rtl
 			reset : function( duration ){}, 	//Reset the animation
 			destroy : function( duration ){} 	//Destroy the instance
 		},  params || {} ),
@@ -162,7 +162,7 @@
 					pageY 		= 0;
 
 				pageX  = hasTouch ? e.originalEvent.touches[0].pageX : ( hasMSPointer ? e.originalEvent.pageX : e.pageX ),
-                pageY  = hasTouch ? e.originalEvent.touches[0].pageY : ( hasMSPointer ? e.originalEvent.pageY : e.pageY );
+                		pageY  = hasTouch ? e.originalEvent.touches[0].pageY : ( hasMSPointer ? e.originalEvent.pageY : e.pageY );
 
 				if( params.direction == 'ltr' || params.direction == 'rtl' ){
 
