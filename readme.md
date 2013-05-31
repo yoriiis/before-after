@@ -8,6 +8,7 @@ $('.selector').beforeafter({
 });
 ```
 
+
 ###Supports
 IE6/7/8/9/10, FF, Chrome, Opera, Safari, iOS, Android, Window 8
 
