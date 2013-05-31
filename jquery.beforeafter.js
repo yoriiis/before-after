@@ -43,8 +43,8 @@
 		var params = $.extend({
 			cursor 			: false, 			//A div following the mouse
 			direction		: 'ttb', 			//ttb, btt, ltr, rtl
-			reset : function( duration ){}, 	//Reset the animation
-			destroy : function( duration ){} 	//Destroy the instance
+			reset : function( duration ){}, 			//Reset the animation
+			destroy : function( duration ){} 			//Destroy the instance
 		},  params || {} ),
 			self 			= this,
 			timer 			= null,
@@ -162,7 +162,7 @@
 					pageY 		= 0;
 
 				pageX  = hasTouch ? e.originalEvent.touches[0].pageX : ( hasMSPointer ? e.originalEvent.pageX : e.pageX ),
-                pageY  = hasTouch ? e.originalEvent.touches[0].pageY : ( hasMSPointer ? e.originalEvent.pageY : e.pageY );
+                		pageY  = hasTouch ? e.originalEvent.touches[0].pageY : ( hasMSPointer ? e.originalEvent.pageY : e.pageY );
 
 				if( params.direction == 'ltr' || params.direction == 'rtl' ){
 
@@ -222,10 +222,10 @@
 	$.fn.beforeafter = function(options) { 
 		return this.each(function() {
 			var elmt = $(this);
-            if (elmt.data('beforeafter')) return;
-            var beforeafter = new BeforeAfter(this, options);
-            elmt.data('beforeafter', beforeafter);
-        });
+            		if (elmt.data('beforeafter')) return;
+            		var beforeafter = new BeforeAfter(this, options);
+            		elmt.data('beforeafter', beforeafter);
+        	});
 	};
 
 })( jQuery, window );
