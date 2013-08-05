@@ -222,10 +222,10 @@
 	$.fn.beforeafter = function(options) { 
 		return this.each(function() {
 			var elmt = $(this);
-            if (elmt.data('beforeafter')) return;
-            var beforeafter = new BeforeAfter(this, options);
-            elmt.data('beforeafter', beforeafter);
-        });
+	            if (elmt.data('beforeafter')) return;
+	            var beforeafter = new BeforeAfter(this, options);
+	            elmt.data('beforeafter', beforeafter);
+	        });
 	};
 
 })( jQuery, window );
