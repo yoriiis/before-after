@@ -1,7 +1,7 @@
 {
   "name": "before-after.js",
-  "version": "1.1.0",
-  "description": "Plugin to animate two image on the way to jpegmini homepage",
+  "version": "1.2.0",
+  "description": "New version of beforeAfter plugin, more options, responsive to resize and new method to add preview of animation. Plugin to animate two image on the way to jpegmini homepage",
   "main": "./js/jquery.beforeafter.js",
   "moduleType": [
     "globals"
@@ -15,6 +15,15 @@
     "plugin",
     "hover",
     "before after",
+    "beforeAfter",
+    "beforeafterjs",
+    "before after js",
+    "before after jquery",
+    "jquery before after",
+    "jquery beforeAfter",
+    "jquery beforeafter",
+    "jquery preview",
+    "jquery previewjs",
     "animation"
   ],
   "ignore": [
