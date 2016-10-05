@@ -2,7 +2,7 @@
 
 New version of beforeAfter plugin, more options, responsive to resize and new method to add preview of animation.<br />
 
-#### Structure of HTML
+### Structure of HTML
 
 Images must be superposed, and CSS class `active` determine the upper image.
 ```html
@@ -12,12 +12,12 @@ Images must be superposed, and CSS class `active` determine the upper image.
 </ul>
 ```
 
-#### Librairies compatibilities
+### Librairies compatibilities
 
 BeforeAfter plugin is compatible with <a href="https://github.com/Modernizr/Modernizr" title="Modernizr" target="_blank">Modernizr</a> and <a href="https://github.com/desandro/imagesloaded" title="imagesLoaded" target="_blank">imagesLoaded</a>.<br />If one or the other plugins is unavailable, options are disable by default, and the plugin is fully functional.<br />For information, jQuery 1.7+ is require to use this plugin.
 
 
-#### Options
+### Options
 
 * `cursor` <span> tag following mouse or finger
 * `direction` 4 directions available : ltr | rtl | ttb | btt
@@ -30,7 +30,7 @@ BeforeAfter plugin is compatible with <a href="https://github.com/Modernizr/Mode
 (ltr : left to right | rtl : right to left | ttb : top to bottom | btt : bottom to top)
 
 
-#### Instanciate the plugin
+### Instanciate the plugin
 
 ```javascript
 $('.beforeafter').beforeafter({
@@ -44,7 +44,7 @@ $('.beforeafter').beforeafter({
 });
 ```
 
-#### Control the preview
+### Control the preview
 
 You can start a preview of animation on callback function or when you want, with goTo method, follow example above and below.<br /><br />Use this parameters to control animation :
 
@@ -70,6 +70,17 @@ $('.beforeafter').beforeafter({
 });
 ```
 
-#### Browser support
+### Methods
+
+* `reset` reset CSS property
+* `destroy` reset and destroy plugin instance
+
+Access to method with instance
+```javascript
+$('.beforeafter').data('beforeafter').reset();
+$('.beforeafter').data('beforeafter').destroy();
+```
+
+### Browser support
 
 IE8+, FF, Chrome, Opera, Safari, iOS, Android, Window 8
