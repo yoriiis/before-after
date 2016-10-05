@@ -1,231 +1,483 @@
 /**
- * @fileoverview scriptease.support.
- *
- * The main point of this module is to provide a list 
- * of some of the features the browser may or may not implement.
- * It also provides methods to add custom tests.
- */
-(function(j,d){var a=j.scriptease||{},l={},c=null,e=document.documentElement,k=document.createElement("div"),h=k.style,f=" Webkit WebKit Moz O Ms".split(" "),i=" -webkit- -webkit- -moz- -o- -ms-".split(" "),g=f.length,b=function(s,q){var p=typeof q!="undefined"?q:false,r,o=g;r=s.replace(/(^[a-z])/g,function(t){return t.toUpperCase()}).replace(/\-([a-z])/g,function(u,t){return t.toUpperCase()});while(o--){if(s in h){return s}else{if(f[o]+r in h){return p?i[o]+s.toLowerCase():f[o]+r}else{if(j[f[o].toLowerCase()+r]!=d){return f[o].toLowerCase()+r}else{if(typeof j[f[o]+r]!="undefined"){return f[o]+r}}}}}return false};c={prefix:function(){var o=b("transform");return !!o?o.replace("Transform",""):""},cssprefix:function(){var o=b("transform",true);return !!o?o.replace("transform",""):""},transform:function(){return b("transform")},transform3d:function(){return("WebKitCSSMatrix" in j&&"m11" in new WebKitCSSMatrix())||!!b("perspective")},transformOrigin:function(){return b("transformOrigin")},backfaceVisibility:function(){return b("backfaceVisibility")},perspective:function(){return b("perspective")},transition:function(){return b("transition")},transitionProperty:function(){return b("transitionProperty")},transitionDuration:function(){return b("transitionDuration")},transitionTimingFunction:function(){return b("transitionTimingFunction")},transitionDelay:function(){return b("transitionDelay")},transitionEvent:function(){return b("transitionEvent")},transitionEventPrefix:function(){return !!b("transitionEvent")?b("transitionEvent").replace("TransitionEvent","").toLowerCase():""},transitionEnd:function(){return this.transitionEventPrefix()!=""?this.transitionEventPrefix()+"TransitionEnd":"transitionend"},touch:function(){return"ontouchstart" in document.documentElement},MSPointer:function(){return !!j.navigator.msPointerEnabled}};var m;for(var n in c){if(c.hasOwnProperty(n)){m=n.toLowerCase();l[m]=c[n]()}}l.test=function(o){return !!b(o)};l.getPrefixed=function(o){return b(o)};l.getCssPrefixed=function(o){return b(o,true)};if(typeof j.support!="undefined"){a.support=l;j.scriptease=a}else{j.support=l}})(this);
-
-
-/**
  *
  * Plugin: jQuery BeforeAfter
- * @version 1.1
+ * @version 1.2
  * @author: Joris DANIEL
- * @fileoverview:
- * Thanks to Nicolas Riciotti aka Twode
- * Supports : IE6/7/8/9/10, FF, Chrome, Opera, Safari, iOS, Android, Window 8
+ * Supports : IE8+, FF, Chrome, Opera, Safari, iOS, Android, Window 8
  *
- * Copyright (c) 2013 Joris DANIEL
+ * Copyright (c) 2016 Joris DANIEL
  * Licensed under the MIT License: http://www.opensource.org/licenses/mit-license.php
  *
- *  Sample usage
- *  $('.beforeafter').beforeafter({
- *      cursor: false,
- *      direction: 'ttb', //ttb, btt, ltr, rtl
- *  });
- * 
- *  Instance
- *  $('.beforeafter').data('beforeafter')
- *
- *  Get position
- *  $('.beforeafter').data('position')
- *
-**/
+ **/
 
-(function ($, window) {
+(function($, window) {
 
     "use strict";
 
-    var BeforeAfter = function( elmt, params ){
+    var BeforeAfter = function(elmt, options) {
 
-        var params = $.extend({
-            cursor          : false,    //A div following the mouse
-            direction       : 'ttb',    //ttb, btt, ltr, rtl
-            reset : function( duration ){},     //Reset the animation
-            destroy : function( duration ){}    //Destroy the instance
-        },  params || {} ),
-            self            = this,
-            timer           = null,
-            $element        = $(elmt),
-            $picture        = $(elmt).find('.active'),
-            heightElement   = parseInt( $element.height() ),
-            widthElement    = parseInt( $element.width() );
+        var _this = this;
+        var options = $.extend({
+                cursor: true, //A div following the mouse
+                direction: 'ttb', //ttb, btt, ltr, rtl
+                classNameCursor: 'cursor', //className of cursor
+                checkImagesLoaded: false,
+                useCSSTransform: true,
+                debug: false,
+                callback: function() {}, //Reset the animation
+                reset: function(duration) {}, //Reset the animation
+                destroy: function(duration) {} //Destroy the instance
+            }, options || {});
+        var $element = $(elmt);
+        var $liPicture = $(elmt).find('.active');
+        var heightElement = null;
+        var widthElement = null;
+        var orientation = '';
+        var attrToAnimate = '';
+        var widthHeight = '';
+        var timerGoTo = null;
+        var timerGoToAfter = null;
+        var timerCleaned = false;
+        var hasTouch = ( 'ontouchstart' in window ) || ( navigator.maxTouchPoints > 0 ) || ( navigator.msMaxTouchPoints > 0 );
+        var hasMSPointer = window.navigator.msPointerEnabled;
+        var events = null;
+        var supportCSSTransform = null;
+        var $cursor = null;
+        var callbackFunction = (typeof options.callback === 'function') ? options.callback : function(){};
 
+        var init = function(){
 
-        var orientation     = '',
-            attrToAnimate   = '',
-            widthHeight     = '',
-            hasTouch        = 'ontouchstart' in document.documentElement,
-            hasMSPointer    = window.navigator.msPointerEnabled,
-            events          = hasTouch  ? 'touchmove' : (hasMSPointer ? 'MSPointerMove' : 'mousemove');
+            //Check event touch, mspointer or mouse to declare
+            if( hasTouch ){
+                if( hasMSPointer ){
+                    events = 'pointerstart MSPointerMove';
+                }else{
+                    events = 'touchstart touchmove';
+                }
+            }else{
+                events = 'mousemove';
+            }
 
-        if (params.direction == 'ltr' || params.direction == 'rtl') {
-            
-            orientation      = "horizontal";
-            attrToAnimate    = "left";
-            widthHeight      = 'width';
+            //If option useCSSTransform enabled check if Modernizr is available, else disabled CSS transform
+            if( options.useCSSTransform && typeof Modernizr !== 'undefined' ){
+                supportCSSTransform = Modernizr.testProp('transform');
+            }else{
+                //Log if option useCSSTransform enabled and Modernizr not loaded
+                if( options.useCSSTransform && typeof Modernizr === 'undefined' && options.debug ){
+                    console.info('jquery.beforeafter.js :: Modernizr is required to detect and use transform CSS property. Without, plugin use just top/left property. Please visit https://github.com/Modernizr/Modernizr');
+                }
+                supportCSSTransform = false;
+            }
 
-        } else if (params.direction == 'ttb' || params.direction == 'btt') {
-            
-            orientation      = "vertical";
-            attrToAnimate    = "top";
-            widthHeight      = 'height';
+            //Detect orientationa nd attribute to animate
+            if (options.direction === 'ltr' || options.direction === 'rtl') {
+                orientation = 'horizontal';
+                widthHeight = 'width';
+                if( options.direction === 'ltr' ){
+                    attrToAnimate = 'left';
+                }else{
+                    attrToAnimate = 'right';
+                }
+            } else if (options.direction === 'ttb' || options.direction === 'btt') {
+                orientation = 'vertical';
+                if( options.direction === 'ttb' ){
+                    attrToAnimate = 'top';
+                }else{
+                    attrToAnimate = 'bottom';
+                }
+                widthHeight = 'height';
+            }
 
-        }
-
-        //Instanciate the plugin
-        var init = (function(){
-            
-            $picture.css('zIndex', 1);
+            $liPicture.css('zIndex', 1);
             $element.find('li').show();
 
-            //If cursor, construct it
-            if( params.cursor ){
-                
-                $element.after('<div class="cursor"></div>');
-                
-                var $cursor = $element.siblings('.cursor'),
-                    cssCursor = {
-                        position: 'absolute',
-                        zIndex: '10',
-                        backgroundColor: '#000',
-                        overflow: 'hidden',
-                    };
+            //If option cursor enabled, build cursor
+            if (options.cursor) {
+                buildCursor();
+            }
 
-                if ( orientation == 'horizontal' ) {
-                    cssCursor['width']  = '2px';
-                    cssCursor['height'] = '100%';
-                    cssCursor['top'] = 0;
-                }else if ( orientation == 'vertical' ) {
-                    cssCursor['width']  = '100%';
-                    cssCursor['height'] = '2px';
-                    cssCursor['left'] = 0;
+            //Check images loaded before wrap images and call callback function
+            checkImagesLoaded(function(){
+                wrapImages();
+                callbackFunction.call(_this);
+            });
+
+            $element.on(events, onMove);
+            $(window).on('resize', onResize);
+
+        };
+
+        var checkImagesLoaded = function(callback){
+
+            //If option checkImagesLoaded enabled check if imagesLoaded is available, else disabled imagesLoaded
+            if (options.checkImagesLoaded && typeof $.fn.imagesLoaded !== 'undefined' ) {
+
+                $element.imagesLoaded(function(){
+                    heightElement = parseInt($element.height());
+                    widthElement = parseInt($element.width());
+                    callback();
+                });
+
+            }else{
+
+                //Log if option checkImagesLoaded enabled and imagesLoaded not loaded
+                if( options.checkImagesLoaded && typeof $.fn.imagesLoaded === 'undefined' && options.debug ){
+                    console.info('jquery.beforeafter.js :: ImagesLoaded is required with options.checkImagesLoaded. Please install with "bower install imagesloaded --save" or visit https://github.com/desandro/imagesloaded');
                 }
 
-                if ( params.direction == 'ltr' ) cssCursor['left']      = '0';
-                if ( params.direction == 'rtl' ) cssCursor['right']     = '0'; 
-                if  (params.direction == 'ttb' ) cssCursor['top']       = '0';
-                if ( params.direction == 'btt' ) cssCursor['bottom']    = '0';
-
-                $cursor.css( cssCursor );
+                heightElement = parseInt($element.height());
+                widthElement = parseInt($element.width());
+                callback();
 
             }
 
-            //Wrap image
-            $element.find('li').each(function(){
+        };
+
+        var buildCursor = function(refresh){
+
+            var cssCursor = {
+                'position': 'absolute',
+                'zIndex': '10',
+                'backgroundColor': '#000',
+                'overflow': 'hidden',
+                'display': 'block'
+            };
+
+            //If method is use only to refresh CSS property, don't create tag
+            if( !refresh ){
+                $element.after('<span class="' + options.classNameCursor + '"></span>');
+                $cursor = $element.siblings('.' + options.classNameCursor);
+            }
+
+            if (orientation === 'horizontal') {
+                cssCursor['width'] = '2px';
+                cssCursor['height'] = '100%';
+                cssCursor['top'] = 0;
+            } else if (orientation === 'vertical') {
+                cssCursor['width'] = '100%';
+                cssCursor['height'] = '2px';
+                cssCursor['left'] = 0;
+            }
+
+            if (options.direction === 'ltr') {
+                cssCursor['left'] = 0;
+            }
+            if (options.direction === 'rtl') {
+                cssCursor['left'] = 'auto';
+                cssCursor['right'] = 0;
+            }
+            if (options.direction === 'ttb'){
+                cssCursor['top'] = 0;
+            }
+            if (options.direction === 'btt'){
+                cssCursor['top'] = 'auto';
+                cssCursor['bottom'] = 0;
+            }
+
+            $cursor.css(cssCursor);
+
+        };
+
+        var wrapImages = function(){
+
+            $element.find('li').each(function() {
                 $(this).find('img').wrap('<div class="wrap-img">');
             });
 
-            if ( orientation == 'horizontal' ) {
+            var $wraps = $('.wrap-img'),
+                $wrapImgs = $('.wrap-img img');
 
-                $('.wrap-img img').css({'width': 'auto', 'height': '100%'});
-                $('.wrap-img').css({'position': 'absolute', 'top': '0', 'width': widthElement });
-                $picture.css({ 'top': '0' });
+            if (orientation === 'horizontal') {
 
-                if( params.direction == 'ltr' ){
-                    $picture.css({ 'left': 'auto', 'right': '0' });
-                    $('.wrap-img').css({ 'right': '0' });
+                $wraps.css({
+                    'position': 'absolute',
+                    'top': '0',
+                    'width': widthElement
+                });
+                $liPicture.css({
+                    'top': '0'
+                });
+
+                if (options.direction === 'ltr') {
+                    $liPicture.css({
+                        'left': 'auto',
+                        'right': '0'
+                    });
+                    $wraps.css({
+                        'right': '0'
+                    });
                 }
 
-                if( params.direction == 'rtl' ){
-                    $picture.css({ 'left': '0', 'right': 'auto' });
-                    $('.wrap-img').css({ 'left': '0' });
+                if (options.direction === 'rtl') {
+                    $liPicture.css({
+                        'left': '0',
+                        'right': 'auto'
+                    });
+                    $wraps.css({
+                        'left': '0'
+                    });
                 }
 
-            }else if ( orientation == 'vertical' ) {
+            } else if (orientation === 'vertical') {
 
-                $('.wrap-img img').css({'width': '100%', 'height': 'auto'});
-                $('.wrap-img').css({'position': 'absolute', 'left': '0'});
+                $wraps.css({
+                    'position': 'absolute',
+                    'left': '0',
+                    'width': '100%'
+                });
 
-                if( params.direction == 'ttb' ){
-                    $picture.css({'bottom': '0', 'top': 'auto'});
-                    $('.wrap-img').css({'bottom': '0'});
+                if (options.direction === 'ttb') {
+                    $liPicture.css({
+                        'bottom': '0',
+                        'top': 'auto'
+                    });
+                    $wraps.css({
+                        'bottom': '0'
+                    });
                 }
 
-                if( params.direction == 'btt' ){
-                    $picture.css({'bottom': 'auto', 'top': '0'});
-                    $('.wrap-img').css({'top': '0'});
+                if (options.direction === 'btt') {
+                    $liPicture.css({
+                        'bottom': 'auto',
+                        'top': '0'
+                    });
+                    $wraps.css({
+                        'top': '0'
+                    });
                 }
 
             }
-    
-
-            $element.on(events, function(e){
-
-                e.preventDefault();
-
-                var translate   = '',
-                    value       = 0,
-                    pageX       = 0,
-                    pageY       = 0;
-
-                pageX  = hasTouch ? e.originalEvent.touches[0].pageX : ( hasMSPointer ? e.originalEvent.pageX : e.pageX ),
-                        pageY  = hasTouch ? e.originalEvent.touches[0].pageY : ( hasMSPointer ? e.originalEvent.pageY : e.pageY );
-
-                if( params.direction == 'ltr' || params.direction == 'rtl' ){
-
-                    value = ( params.direction == 'ltr' ) ? ( widthElement - ( pageX - $element.offset().left ))<<0 : ( pageX - $element.offset().left )<<0;
-                    translate = ( params.direction == 'rtl' ) ? ( value - widthElement ) + "px, 0px" : ( widthElement - value ) + "px, 0px";
-
-                }else if( params.direction == 'ttb' || params.direction == 'btt' ){
-
-                    value = ( params.direction == 'ttb' ) ? ( heightElement - (pageY - $element.offset().top ))<<0 : (pageY - $element.offset().top)<<0;
-                    translate = ( params.direction == 'ttb' ) ? "0px, " + (heightElement - value) + "px" : "0px, " + ( value - heightElement ) + "px";
-                }
-
-                if( params.cursor ){
-                    ( support.getPrefixed('transform') ) ? $cursor.css(support.getPrefixed('transform'), "translate(" + translate + ") translateZ(0)") : $cursor.css(attrToAnimate, value + 'px');
-                }
-
-                $picture[widthHeight](value + 'px');
-                $element.attr('data-position', value);
-
-            });
-
-
-            $element.on('mouseover', function(e){
-                clearTimeout( timer );
-            });
-
-
-        })();
-
-
-        //Reset position
-        this.reset = function( duration ){
-
-            if( typeof duration == 'undefined' ) duration = 100
-
-            var widthHeight = ( orientation == 'horizontal' ) ? {'width': '100%'} : {'height': '100%'};
-            $picture.animate( widthHeight, duration, function(){ return true; });
-            ( support.getPrefixed('transform') ) ? 
-                $cursor.css(support.getPrefixed('transform'), "none") : 
-            ( ( orientation == 'horizontal' ) ? $cursor.css('left', '0px') : $cursor.css('left', '0px'));
 
         };
 
+        var onMove = function(e){
+
+            e.preventDefault();
+
+            //If user hover during animation, clear timer and stop animate
+            if( timerGoTo !== null && !timerCleaned ){
+                clearTimeout(timerGoTo);
+                clearTimeout(timerGoToAfter);
+                $liPicture.stop();
+                $cursor.stop();
+                buildCursor(true);
+                timerCleaned = true;
+            }
+
+            var translate = '',
+                value = 0,
+                valueMoveTransform = 0,
+                valueMoveCSS = 0,
+                valueMoveCursor = 0,
+                valueMovePicture = 0,
+                pageX = 0,
+                pageY = 0;
+
+            pageX = hasTouch ? e.originalEvent.touches[0].pageX : (hasMSPointer ? e.originalEvent.pageX : e.pageX),
+                pageY = hasTouch ? e.originalEvent.touches[0].pageY : (hasMSPointer ? e.originalEvent.pageY : e.pageY);
+
+            if (options.direction === 'ltr' || options.direction === 'rtl') {
+
+                if( options.direction === 'ltr' ){
+                    valueMoveCSS = (pageX - $element.offset().left) << 0;
+                    valueMoveTransform = (valueMoveCSS) + 'px, 0px';
+                    valueMovePicture = widthElement - valueMoveCSS;
+                }else{
+                    valueMoveCSS = widthElement - (pageX - $element.offset().left) << 0;
+                    valueMoveTransform = -(valueMoveCSS) + 'px, 0px';
+                    valueMovePicture = widthElement - valueMoveCSS;
+                }
+
+            } else if (options.direction === 'ttb' || options.direction === 'btt') {
+
+                if( options.direction === 'ttb' ){
+
+                    valueMoveCSS = (pageY - $element.offset().top) << 0;
+                    valueMoveTransform = '0px, ' + valueMoveCSS + 'px';
+                    valueMovePicture = heightElement - valueMoveCSS;
+
+                }else{
+                    valueMoveCSS = heightElement - (pageY - $element.offset().top) << 0;
+                    valueMoveTransform = '0px, ' + (-valueMoveCSS) + 'px';
+                    valueMovePicture = heightElement - valueMoveCSS;
+                }
+
+            }
+
+            //Apply movement on cursor if enabled
+            if (options.cursor) {
+                if( supportCSSTransform ){
+                    valueMoveCursor = valueMoveTransform;
+                    $cursor.css('transform', 'translate(' + valueMoveTransform + ') translateZ(0)');
+                }else{
+                    valueMoveCursor = valueMoveCSS;
+                    $cursor.css(attrToAnimate, valueMoveCSS + 'px');
+                }
+            }
+
+
+            $liPicture[widthHeight]( valueMovePicture + 'px');
+
+            //Update current position available on instance
+            _this.position = valueMoveCSS;
+
+        };
+
+        //Update all CSS property on resize
+        var onResize = function(){
+
+            var valueMoveCSS = 0,
+                valueMoveTransform = null;
+
+            heightElement = parseInt($element.height());
+            widthElement = parseInt($element.width());
+
+            if (orientation === 'horizontal') {
+
+                $('.wrap-img').css({
+                    'position': 'absolute',
+                    'top': '0',
+                    'width': widthElement
+                });
+
+                if( options.direction === 'ltr' ){
+                    valueMoveCSS = $liPicture.position().left;
+                    valueMoveTransform = valueMoveCSS + 'px, 0';
+                }else if( options.direction === 'rtl' ){
+                    valueMoveCSS = (widthElement - $liPicture.width()) * -1;
+                    valueMoveTransform = valueMoveCSS + 'px, 0';
+                }
+
+            }else if( orientation === 'vertical' ){
+
+                if( options.direction === 'ttb' ){
+                    valueMoveCSS = $liPicture.position().top;
+                    valueMoveTransform = '0, ' + valueMoveCSS + 'px';
+                }else if( options.direction === 'btt' ){
+                    valueMoveCSS = (heightElement - $liPicture.height()) * -1;
+                    valueMoveTransform = '0 , ' + valueMoveCSS + 'px';
+                }
+
+            }
+
+            if (options.cursor) {
+                if( supportCSSTransform ){
+                    $cursor.css('transform', 'translate(' + valueMoveTransform + ') translateZ(0)');
+                }else{
+                    $cursor.css(attrToAnimate, valueMoveCSS + 'px');
+                }
+            }
+
+        };
+
+        this.goTo = function( percentage, duration, animation, easing ){
+
+            timerGoTo = setTimeout(function(){
+
+                var valueMoveDependOnElement = 0,
+                    valueMove = 0,
+                    valueCursorTransform = 0,
+                    useAnimation = (typeof animation !== 'undefined' ) ? animation : true,
+                    typeEasing = (typeof easing !== 'undefined' ) ? animation : 'linear',
+                    objPicture = {},
+                    objCursor = {},
+                    delayAfterAnimation = 100;
+
+                if (options.direction === 'ltr' || options.direction === 'rtl' ){
+                    valueMoveDependOnElement = widthElement - ((widthElement * percentage) / 100);
+                    valueMove = (widthElement * percentage) / 100;
+                }else if( options.direction === 'ttb' || options.direction === 'btt' ){
+                    valueMoveDependOnElement = heightElement - ((heightElement * percentage) / 100);
+                    valueMove = (heightElement * percentage) / 100;
+                }
+
+                if( typeof jQuery !== 'undefined' && useAnimation ){
+
+                    objPicture[widthHeight] = valueMoveDependOnElement + 'px';
+                    $liPicture.animate(objPicture, duration, options.easing);
+
+                    if (options.cursor) {
+
+                        objCursor[attrToAnimate] = valueMove;
+                        $cursor.animate(objCursor, duration, options.easing);
+
+                        //Cursor has moved with top/left property, if supportCSSTransform is enabled, change top/left with CSS Transform after animation
+                        if( supportCSSTransform ){
+
+                            timerGoToAfter = setTimeout(function(){
+
+                                if (options.direction === 'ltr'){
+                                    valueCursorTransform = valueMoveDependOnElement + 'px, 0';
+                                    $cursor.css(attrToAnimate, 'auto');
+                                }else if( options.direction === 'rtl' ){
+                                    valueCursorTransform = valueMoveDependOnElement + 'px, 0';
+                                    $cursor.css(attrToAnimate, 'auto');
+                                }else if( options.direction === 'ttb' ){
+                                    valueCursorTransform = '0, ' + valueMoveDependOnElement + 'px';
+                                    $cursor.css(attrToAnimate, 0);
+                                }else if( options.direction === 'btt' ){
+                                    $cursor.css(attrToAnimate, 'auto');
+                                    valueCursorTransform = '0, ' + (-valueMoveDependOnElement) + 'px';
+                                }
+
+                                $cursor.css('transform', 'translate(' + valueCursorTransform + ') translateZ(0)');
+
+                            }, duration + delayAfterAnimation);
+
+                        }
+
+                    }
+
+                }else{
+                    $liPicture[widthHeight](valueMoveDependOnElement + 'px');
+                    $cursor.css(attrToAnimate, valueMove);
+                }
+
+                //Update current position available on instance
+                _this.position = valueMoveDependOnElement;
+
+            }, 100);
+
+        };
+
+        //Reset all CSS position
+        this.reset = function(duration) {
+
+            if( supportCSSTransform ){
+                $cursor.css('transform', 'none');
+            }
+
+            if (orientation === 'horizontal') {
+                $liPicture.css('width', '100%');
+                $cursor.css('left', '0px');
+            } else {
+                $liPicture.css('height', '100%');
+                $cursor.css('top', '0px');
+            }
+
+        };
 
         //Destroy instance and reset position
-        this.destroy = function(e){
-
-            if( this.reset( 100 ) ){
-                $element.off('mousemove');
-                self = timer = el = $picture = null;
-            }
-
+        this.destroy = function(e) {
+            this.reset();
+            $cursor.remove();
+            $element.off('mousemove');
+            $element.removeData('beforeafter');
         };
+
+        //Init plugin
+        init();
 
     }
 
-    $.fn.beforeafter = function(options) { 
+    //Declare plugin on jQuery and push it on data('beforeafter')
+    $.fn.beforeafter = function(options) {
         return this.each(function() {
             var elmt = $(this);
-                if (elmt.data('beforeafter')) return;
-                var beforeafter = new BeforeAfter(this, options);
-                elmt.data('beforeafter', beforeafter);
-            });
+            if (elmt.data('beforeafter')) return;
+            var beforeafter = new BeforeAfter(this, options);
+            elmt.data('beforeafter', beforeafter);
+        });
     };
 
-})( jQuery, window );
+})(jQuery, window);
