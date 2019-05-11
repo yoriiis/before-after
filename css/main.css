@@ -1,0 +1,33 @@
+
+body{
+    max-width: 910px;
+    margin: 0 auto;
+}
+.container-beforeafter{
+    width: 100%;
+    padding-top: 45.05%;
+    height: 0;
+    position: relative;
+}
+.beforeafter{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    pointer-events: auto;
+    -ms-touch-action: none;
+}
+.beforeafter .beforeafter-item{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+.beforeafter img{
+    width: 100%;
+    height: 100%;
+}

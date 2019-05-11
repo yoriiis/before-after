@@ -1,0 +1,43 @@
+{
+  "name": "before-after",
+  "version": "2.0.0",
+  "description": "BeforeAfter is a lightweight Javascript library to compare images in before/after view without any dependencies",
+  "author": "Yoriiis aka Joris DANIEL",
+  "license": "MIT",
+  "main": "./dist/before-after.js",
+  "scripts": {
+    "build": "mkdir -p dist && npx babel ./src/before-after.js --out-file ./dist/before-after.js"
+  },
+  "devDependencies": {
+    "@babel/cli": "7.4.4",
+    "@babel/core": "7.4.4",
+    "@babel/preset-env": "7.4.4",
+    "babel-plugin-add-module-exports": "1.0.2",
+    "eslint": "5.16.0",
+    "eslint-config-prettier": "4.2.0"
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yoriiis/before-after.js.git"
+  },
+  "keywords": [
+    "jpeg mini",
+    "hover",
+    "animation",
+    "slider",
+    "before",
+    "after",
+    "before after",
+    "simple",
+    "customizable",
+    "powerful",
+    "lightweight",
+    "images",
+    "no dependencies"
+  ],
+  "bugs": {
+    "url": "https://github.com/yoriiis/before-after.js/issues"
+  },
+  "homepage": "https://github.com/yoriiis/before-after.js#readme"
+}
