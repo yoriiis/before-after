@@ -1,6 +1,6 @@
 {
   "name": "before-after",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "BeforeAfter is a lightweight Javascript library to compare images in before/after view without any dependencies",
   "authors": "Yoriiis aka Joris DANIEL",
   "license": "MIT",
