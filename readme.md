@@ -12,6 +12,10 @@ BeforeAfter is available as the `before-after` package on <a href="https://www.n
 npm install before-after --save
 ```
 
+## Demo
+
+Online demo is available on the <a href="https://yoriiis.github.io/before-after.js/" title="BeforeAfter Github page" target="_blank">BeforeAfter Github page</a>.
+
 ## How it works
 
 ### HTML structure
@@ -120,4 +124,4 @@ beforeAfterItem.destroy();
 
 ### Browsers support
 
-BeforeAfter is compatible with all no-touch and touch devices such as Android or iOS. The library uses CSS transform property for better animations, all last browsers are compatible. More information in <a href="https://caniuse.com/#search=transform" title="Can I Use">Can I Use</a>
+BeforeAfter is compatible with all no-touch and touch devices such as Android or iOS. The library uses CSS transform property for better animations, all last browsers are compatible. More information in <a href="https://caniuse.com/#search=transform" title="Can I Use" target="_blank">Can I Use</a>
