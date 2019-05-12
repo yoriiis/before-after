@@ -1,12 +1,6 @@
 {
     "presets": [
-        ["@babel/preset-env", {
-            "modules": false,
-            "targets": {
-                "browsers": ["> 1%", "last 2 versions", "Firefox ESR"],
-                "node": "8.11.4"
-            }
-        }],
+        ["@babel/preset-env"]
     ],
     "plugins": ["add-module-exports"]
 }
