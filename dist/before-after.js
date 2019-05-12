@@ -1,13 +1,18 @@
 /**
  * @license MIT
  * @name BeforeAfter
- * @version 2.0.1
+ * @version 2.0.2
  * @author: Yoriiis aka Joris DANIEL <joris.daniel@gmail.com>
  * @description: BeforeAfter is a lightweight Javascript library to compare images in before/after view without any dependencies
  * {@link https://github.com/yoriiis/before-after.js}
  * @copyright 2019 Joris DANIEL
  **/
 'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
@@ -506,4 +511,6 @@ function () {
   return BeforeAfter;
 }();
 
-export default BeforeAfter;
+var _default = BeforeAfter;
+exports["default"] = _default;
+module.exports = BeforeAfter;
