@@ -1,6 +1,6 @@
 {
   "name": "before-after",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "BeforeAfter is a lightweight Javascript library to compare images in before/after view without any dependencies",
   "author": "Yoriiis aka Joris DANIEL",
   "license": "MIT",
@@ -9,9 +9,9 @@
     "build": "mkdir -p dist && npx babel ./src/before-after.js --out-file ./dist/before-after.js && uglifyjs ./dist/before-after.js --compress --mangle --output ./dist/before-after.min.js"
   },
   "devDependencies": {
-    "@babel/cli": "7.4.4",
-    "@babel/core": "7.4.4",
-    "@babel/preset-env": "7.4.4",
+    "@babel/cli": "7.5.5",
+    "@babel/core": "7.5.5",
+    "@babel/preset-env": "7.5.5",
     "babel-plugin-add-module-exports": "1.0.2",
     "uglify-es": "3.3.9"
   },
