@@ -9,7 +9,7 @@
     "build": "mkdir -p dist && npx babel ./src/before-after.js --out-file ./dist/before-after.js && uglifyjs ./dist/before-after.js --compress --mangle --output ./dist/before-after.min.js"
   },
   "devDependencies": {
-    "@babel/cli": "7.5.5",
+    "@babel/cli": "7.7.7",
     "@babel/core": "7.5.5",
     "@babel/preset-env": "7.5.5",
     "babel-plugin-add-module-exports": "1.0.2",
