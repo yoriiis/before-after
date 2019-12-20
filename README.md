@@ -1,4 +1,4 @@
-![BeforeAfter](https://img.shields.io/badge/BeforeAfter-v2.0.3-b8e986.svg?style=flat-square)
+![BeforeAfter](https://img.shields.io/badge/BeforeAfter-v2.0.4-b8e986.svg?style=flat-square)
 
 # BeforeAfter
 
