@@ -74,15 +74,14 @@ class BeforeAfter {
                 this.heightElement = parseInt(this.options.element.offsetHeight);
                 this.widthElement = parseInt(this.options.element.offsetWidth);
                 this.addImageWrapper();
+                
+                // Excecute the callback function if it is available
+                if (typeof callback === 'function') {
+                callback();
+            }
             });
 
             this.addEvents();
-
-            // Excecute the callback function if it is available
-            if (typeof callback === 'function') {
-                callback();
-            }
-
         }
     }
 
