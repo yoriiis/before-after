@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import webpack from 'webpack'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import TerserPlugin from 'terser-webpack-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
@@ -7,7 +8,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin'
 const appDirectory = fs.realpathSync(process.cwd())
 const resolveApp = (relativePath) => path.resolve(appDirectory, relativePath)
 
-export default (env, argv) => {
+export default function webpackConfig(env, argv) {
 	const isProduction = argv.mode === 'production'
 
 	const config = {
@@ -72,11 +73,12 @@ export default (env, argv) => {
 				filename: 'styles/[name].css',
 				chunkFilename: 'styles/[name].css'
 			}),
+			new webpack.optimize.ModuleConcatenationPlugin(),
 			new HtmlWebpackPlugin({
 				filename: 'index.html',
 				template: resolveApp('demo/index.html'),
-				chunks: ['demo'],
-				publicPath: '../'
+				chunks: ['demo']
+				// publicPath: '../'
 			})
 		],
 		stats: {
@@ -114,6 +116,10 @@ export default (env, argv) => {
 			providedExports: false,
 			splitChunks: false
 		}
+	}
+
+	if (!isProduction) {
+		config.plugins.push(new webpack.ProgressPlugin())
 	}
 
 	return config
