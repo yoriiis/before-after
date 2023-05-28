@@ -6,7 +6,7 @@
 
 #### **This package is now pure ESM.** Please read [Sindre Sorhus ESM note](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c) for more information
 
-- Minimum supported `Node.js` version is `16.20.0` and package is ESM ([#13](https://github.com/yoriiis/validate-target/pull/13))
+- Minimum supported `Node.js` version is `16.20.0` and package is ESM ([#15](https://github.com/yoriiis/validate-target/pull/15))
 
 ## 2.0.4
 

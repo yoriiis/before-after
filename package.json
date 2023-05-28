@@ -20,7 +20,6 @@
 	"repository": "git+https://github.com/yoriiis/before-after.js.git",
 	"license": "MIT",
 	"author": "Joris DANIEL",
-	"type": "module",
 	"main": "dist/before-after.js",
 	"files": [
 		"dist",
