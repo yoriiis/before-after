@@ -3,6 +3,7 @@ import path from 'path'
 import webpack from 'webpack'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import TerserPlugin from 'terser-webpack-plugin'
+import cssMinimizerWebpackPlugin from 'css-minimizer-webpack-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 
 const appDirectory = fs.realpathSync(process.cwd())
@@ -107,7 +108,8 @@ export default function webpackConfig(env, argv) {
 						},
 						mangle: true
 					}
-				})
+				}),
+				new cssMinimizerWebpackPlugin()
 			],
 			chunkIds: 'deterministic', // or 'named'
 			removeAvailableModules: true,
