@@ -136,7 +136,7 @@ new BeforeAfter(document.querySelector('.beforeafter'), {
 
 ### Methods
 
-### `reset`
+#### `reset`
 
 Tells the library to reset the position.
 
@@ -144,7 +144,7 @@ Tells the library to reset the position.
 beforeAfter.reset();
 ```
 
-### `destroy`
+#### `destroy`
 
 Tells the library to destroy the instance.
 
