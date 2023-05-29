@@ -73,7 +73,10 @@ export default function webpackConfig(env, argv) {
 			port: 3000,
 			compress: true,
 			hot: true,
-			open: true
+			open: true,
+			headers: {
+				'Cache-Control': 'no-store'
+			}
 		},
 		context: appDirectory,
 		plugins: [

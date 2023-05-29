@@ -1,9 +1,11 @@
 import './main.css'
-import './images/1.jpg'
-import './images/2.jpg'
+import './images/color.jpg'
+import './images/gray.jpg'
 import BeforeAfter from '../src/before-after.js'
 
-const beforeAfterItem = new BeforeAfter({
-	element: document.querySelector('.beforeafter')
+/* eslint-disable no-unused-vars */
+const beforeAfterItem = new BeforeAfter(document.querySelector('.beforeafter'), {
+	cursor: true,
+	orientation: 'horizontal',
+	start: 30
 })
-beforeAfterItem.create(() => beforeAfterItem.goTo(50))

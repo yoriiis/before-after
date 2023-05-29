@@ -12,5 +12,4 @@ jobs:
     with:
       node-version: 18
       build-dir: demo/dist
-      target-branch: gh-pages
       command-build: npm run build:example

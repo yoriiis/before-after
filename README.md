@@ -6,6 +6,32 @@
 
 ## Installation
 
+### NPM
+
+NPM is the recommended installation method. Install `before-after` in your project with the following command:
+
+```bash
+npm install before-after --save-dev
+```
+
+```bash
+yarn add before-after --dev
+```
+
+> **Note** Minimum supported `Node.js` version is `16.20.0`.
+
+### CDN
+
+You can also download it and include it with a script tag. The library will be registered as the global variable `window.BeforeAfter`.
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/before-after@3" crossorigin></script>
+```
+
+> **Note** You can browse the source of the NPM package at [jsdelivr.com/package/npm/before-after](https://www.jsdelivr.com/package/npm/before-after).
+
+## Installation
+
 The library is available as the `before-after` package name on [npm](https://www.npmjs.com/package/before-after) and [Github](https://github.com/yoriiis/before-after).
 
 ```bash
@@ -18,93 +44,101 @@ yarn add validate-target --dev
 
 ## How it works
 
-### HTML structure
-
-Images must be superposed, and CSS class `active` determine the upper image.
+### HTML
 
 ```html
 <div class="beforeafter">
-  <div class="beforeafter-item active">
-    <img src="img/1.jpg" />
-  </div>
-  <div class="beforeafter-item">
-    <img src="img/2.jpg" />
-  </div>
+  <img src="img/before.jpg" />
+  <img src="img/after.jpg" />
 </div>
 ```
 
-### Basic usage
+### Initialization
 
-Every page that contains BeforeAfter, has to instanciates them. The following example create one item.
+Import `before-after` JavaScript library as an ES6 modules.
 
 ```javascript
-import BeforeAfter from 'before-after';
-const beforeAfterItem = new BeforeAfter({
-  element: document.querySelector('.beforeafter')
-});
-beforeAfterItem.create();
+import Vlitejs from 'vlitejs';
 ```
+
+The `vlitejs` constructor accepts the following parameters:
+
+| Arguments |     Type      | Default | Description                                |
+| --------- | :-----------: | :-----: | ------------------------------------------ |
+| element   | `HTMLElement` | `null`  | `HTMLElement` to target the library        |
+| config    |   `Object`    |  `{}`   | [Configuration](#configuration) (optional) |
+
+Initialize the library with a CSS selector string.
+
+```javascript
+new BeforeAfter(document.querySelector('.beforeafter'));
+```
+
+---
+
+## Configuration
 
 ### Options
 
-You can pass configuration options to BeforeAfter constructor. Example below show all default values. Allowed values are as follows:
+#### `cursor`
 
-```javascript
-{
-    element: null,
-    cursor: true,
-    direction: 'ltr',
-    selectors: {
-        item: '.beforeafter-item',
-        itemActive: '.active',
-        cursor: '.beforeafter-cursor',
-        imageWrapper: '.beforeafter-wrapperImage',
-    }
-}
+Type:
+
+```ts
+type cursor = boolean;
 ```
 
-- `element` - {Object} - DOM element reference
-- `cursor` - {Boolean} - DIV tag following mouse or finger
-- `direction` - {String} - 4 directions available: `ltr`, `rtl`, `ttb`, `btt`
-- `selectors` - {Object} - Configuration of selectors used by BeforeAfter
-  - `item` - {String} - Selector of each items
-  - `itemActive` - {String} - Selector of the active item
-  - `cursor` - {String} - Selector of the cursor
-  - `imageWrapper` - {String} - Selector of the picture wrapper (_automatically generated_)
+Default: `true`
 
-_Note: direction parameter uses naming shortcuts: `left to right`, `right to left`, `top to bottom`, `bottom to top`_
+Tells the library to enable the cursor following mouse or finger.
+
+```js
+new BeforeAfter(document.querySelector('.beforeafter'), {
+  cursor: false
+});
+```
+
+#### `orientation`
+
+Type:
+
+```ts
+type orientation = 'horizontal' | 'vertical';
+```
+
+Default: `'horizontal'`
+
+Tells the library which orientation used.
+
+```js
+new BeforeAfter(document.querySelector('.beforeafter'), {
+  orientation: 'vertical'
+});
+```
+
+#### `start`
+
+Type:
+
+```ts
+type start = number;
+```
+
+Default: `50`
+
+Tells the library the start position.
+
+```js
+new BeforeAfter(document.querySelector('.beforeafter'), {
+  start: 30
+});
+```
 
 ## Callback functions
-
-There is one callback function available with BeforeAfter.
-
-### After the instanciation
-
-The `create` method is a function which accepts a callback function in parameter.
-
-```javascript
-import BeforeAfter from 'before-after';
-const beforeAfterItem = new BeforeAfter({
-  element: document.querySelector('.beforeafter')
-});
-beforeAfterItem.create(() => {
-  // BeforeAfter element is created and ready
-});
-```
 
 ## Available methods
 
 Each BeforeAfter instanciations returns the instance of the class with somes available methods to easily manipulate the element.
-
-### Go to a position
-
-The `goTo()` function allows to move the animation to a specific position. The function accepts one parameter `percentage` in percentage only (without unity).
-
-The function can be used in the callback of the `create()` function, to start the animation on a specific position.
-
-```javascript
-beforeAfterItem.goTo(50);
-```
 
 ### Reset
 
@@ -124,7 +158,7 @@ beforeAfterItem.destroy();
 
 ### Browsers support
 
-`before-after` supports the latest 2 versions of most modern browsers with the [.browserslistrc](https://github.com/vlitejs/vlite/blob/main/.browserslistrc) config.
+`before-after` supports the latest 2 versions of most modern browsers with the Browserslist config.
 
 | Browser    |     Supported      |
 | ---------- | :----------------: |
