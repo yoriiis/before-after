@@ -57,11 +57,11 @@ yarn add validate-target --dev
 
 Import `before-after` JavaScript library as an ES6 modules.
 
-```javascript
-import Vlitejs from 'vlitejs';
+```js
+import BeforeAfter from 'before-after';
 ```
 
-The `vlitejs` constructor accepts the following parameters:
+The `before-after` constructor accepts the following parameters:
 
 | Arguments |     Type      | Default | Description                                |
 | --------- | :-----------: | :-----: | ------------------------------------------ |
@@ -70,7 +70,7 @@ The `vlitejs` constructor accepts the following parameters:
 
 Initialize the library with a CSS selector string.
 
-```javascript
+```js
 new BeforeAfter(document.querySelector('.beforeafter'));
 ```
 
@@ -134,29 +134,27 @@ new BeforeAfter(document.querySelector('.beforeafter'), {
 });
 ```
 
-## Callback functions
+### Methods
 
-## Available methods
+### `reset`
 
-Each BeforeAfter instanciations returns the instance of the class with somes available methods to easily manipulate the element.
+Tells the library to reset the position.
 
-### Reset
-
-The `reset()` function allows to reset the animation and the cursor.
-
-```javascript
-beforeAfterItem.reset();
+```js
+beforeAfter.reset();
 ```
 
-### Destroy
+### `destroy`
 
-The `destroy()` function allows to destroy all references of BeforeAfter and keep the original HTML structure.
+Tells the library to destroy the instance.
 
-```javascript
-beforeAfterItem.destroy();
+```js
+beforeAfter.destroy();
 ```
 
-### Browsers support
+---
+
+## Browsers support
 
 `before-after` supports the latest 2 versions of most modern browsers with the Browserslist config.
 
