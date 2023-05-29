@@ -52,6 +52,13 @@ export default function webpackConfig(env, argv) {
 							}
 						}
 					]
+				},
+				{
+					test: /\.jpg/,
+					type: 'asset/resource',
+					generator: {
+						filename: 'images/[name][ext]'
+					}
 				}
 			]
 		},
