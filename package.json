@@ -23,7 +23,7 @@
 		"test": "npm run test:markdown && npm run test:eslint && npm run test:stylelint",
 		"test:eslint": "eslint ./src ./config ./demo --config ./config/.eslintrc.cjs --ignore-pattern dist",
 		"test:markdown": "markdownlint-cli2 '**/*.md' '.github/*.md'",
-		"test:stylelint": "stylelint \"./src/**/*.css\" \"./demo/**/*.css\" --config ./config/stylelint.config.cjs --fix"
+		"test:stylelint": "stylelint \"./src/**/*.css\" \"./demo/**/*.css\" --config ./config/stylelint.config.cjs"
 	},
 	"browserslist": [
 		"last 2 chrome version",
