@@ -8,6 +8,10 @@ on:
 
 jobs:
   github:
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     uses: yoriiis/actions/.github/workflows/github-pages-deploy.yml@main
     with:
       node-version: 18
