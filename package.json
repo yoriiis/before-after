@@ -12,7 +12,7 @@
 	"license": "MIT",
 	"author": "Joris DANIEL",
 	"type": "module",
-	"main": "dist/before-after.js",
+	"main": "src/before-after.js",
 	"files": [
 		"src"
 	],
