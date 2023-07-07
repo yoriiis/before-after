@@ -62,7 +62,7 @@
 		"postcss-url": "^10.1.1",
 		"prettier": "^2.8.7",
 		"style-loader": "^3.3.2",
-		"stylelint": "^14.10.0",
+		"stylelint": "^15.10.1",
 		"stylelint-config-prettier": "^9.0.5",
 		"stylelint-config-standard": "^27.0.0",
 		"stylelint-prettier": "^2.0.0",
