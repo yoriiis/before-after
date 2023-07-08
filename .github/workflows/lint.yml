@@ -15,3 +15,5 @@ jobs:
     uses: yoriiis/actions/.github/workflows/lint.yml@main
     with:
       typescript-status: false
+      stylelint-config: './config/stylelint.config.cjs'
+      eslint-config: './config/.eslintrc.cjs'
