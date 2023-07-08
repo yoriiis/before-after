@@ -17,3 +17,5 @@ jobs:
       typescript-status: false
       stylelint-config: './config/stylelint.config.cjs'
       eslint-config: './config/.eslintrc.cjs'
+      eslint-input: './src ./config ./demo'
+      stylelint-input: './src/**/*.css ./demo/**/*.css'
