@@ -22,16 +22,6 @@ yarn add before-after --dev
 >
 > **Note** Minimum supported `Node.js` version is `16.20.0`.
 
-### CDN
-
-You can also download it and include it with a script tag. The library will be registered as the global variable `window.BeforeAfter`.
-
-```html
-<script src="https://cdn.jsdelivr.net/npm/before-after@3" crossorigin></script>
-```
-
-> **Note** You can browse the source of the NPM package at [jsdelivr.com/package/npm/before-after](https://www.jsdelivr.com/package/npm/before-after).
-
 ## Installation
 
 The library is available as the `before-after` package name on [npm](https://www.npmjs.com/package/before-after) and [Github](https://github.com/yoriiis/before-after).
@@ -54,6 +44,8 @@ yarn add validate-target --dev
   <img src="img/after.jpg" />
 </div>
 ```
+
+> **Note** The last image will be on the top
 
 ### Initialization
 
@@ -138,14 +130,6 @@ new BeforeAfter(document.querySelector('.beforeafter'), {
 
 ### Methods
 
-#### `reset`
-
-Tells the library to reset the position.
-
-```js
-beforeAfter.reset();
-```
-
 #### `destroy`
 
 Tells the library to destroy the instance.
@@ -155,19 +139,6 @@ beforeAfter.destroy();
 ```
 
 ---
-
-## Browsers support
-
-`before-after` supports the latest 2 versions of most modern browsers with the Browserslist config.
-
-| Browser    |     Supported      |
-| ---------- | :----------------: |
-| Chrome     | :white_check_mark: |
-| Firefox    | :white_check_mark: |
-| Opera      | :white_check_mark: |
-| Edge       | :white_check_mark: |
-| Safari     | :white_check_mark: |
-| iOS Safari | :white_check_mark: |
 
 ## License
 

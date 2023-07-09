@@ -8,11 +8,11 @@
 	],
 	"homepage": "https://github.com/yoriiis/before-after.js",
 	"bugs": "https://github.com/yoriiis/before-after.js/issues",
-	"repository": "git+https://github.com/yoriiis/before-after.js.git",
+	"repository": "https://github.com/yoriiis/before-after.js.git",
 	"license": "MIT",
 	"author": "Joris DANIEL",
 	"type": "module",
-	"main": "src/before-after.js",
+	"exports": "./src/index.js",
 	"files": [
 		"src"
 	],
@@ -22,14 +22,6 @@
 		"start:example": "rm -rf ./demo/dist/ && webpack serve --mode=development --config=./demo/webpack.config.js",
 		"test": "echo \"No test specified\" && exit 0"
 	},
-	"browserslist": [
-		"last 2 chrome version",
-		"last 2 firefox version",
-		"last 2 safari version",
-		"last 2 opera version",
-		"last 2 edge version",
-		"last 2 ios_saf version"
-	],
 	"prettier": "./config/prettier.config.cjs",
 	"devDependencies": {
 		"@babel/core": "^7.22.1",

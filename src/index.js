@@ -38,7 +38,6 @@ export default class BeforeAfter {
 		this.heightElement = null
 		this.widthElement = null
 		this.timerGoTo = null
-		this.timerGoToAfter = null
 		this.timerCleaned = false
 		this.cursor = null
 
@@ -67,7 +66,6 @@ export default class BeforeAfter {
 		}
 
 		this.addEvents()
-
 		this.goTo(this.options.start)
 	}
 
@@ -95,23 +93,18 @@ export default class BeforeAfter {
 			this.cursor.style.width = '2px'
 			this.cursor.style.height = '100%'
 			this.cursor.style.top = '0px'
+			this.cursor.style.left = '0px'
 		} else if (this.options.orientation === 'vertical') {
 			this.cursor.style.width = '100%'
 			this.cursor.style.height = '2px'
 			this.cursor.style.left = '0px'
+			this.cursor.style.top = '0px'
 		}
 
-		if (this.options.orientation === 'horizontal') {
-			this.cursor.style.left = '0px'
-		}
 		if (this.options.direction === 'rtl') {
 			this.cursor.style.left = 'auto'
 			this.cursor.style.right = '0px'
-		}
-		if (this.options.orientation === 'vertical') {
-			this.cursor.style.top = '0px'
-		}
-		if (this.options.direction === 'btt') {
+		} else if (this.options.direction === 'btt') {
 			this.cursor.style.top = 'auto'
 			this.cursor.style.bottom = '0px'
 		}
@@ -169,11 +162,11 @@ export default class BeforeAfter {
 	 * Remove wrapper on each images
 	 */
 	removeImageWrappers() {
-		const items = [...this.elements.container.querySelectorAll('> img')]
+		const items = [...this.elements.container.querySelectorAll('img')]
 		items.forEach((item) => {
-			item.appendChild(item.querySelector('img'))
-			item.querySelector('.beforeafter-item').remove()
+			const parentNode = item.parentNode
 			item.removeAttribute('style')
+			parentNode.replaceWith(...parentNode.childNodes)
 		})
 	}
 
@@ -182,10 +175,9 @@ export default class BeforeAfter {
 	 */
 	addEvents() {
 		this.getUserEventsToTrack().forEach((event) => {
-			this.elements.container.addEventListener(event, this.onMove, false)
+			this.elements.container.addEventListener(event, this.onMove)
 		})
-
-		window.addEventListener('resize', this.onResize, false)
+		window.addEventListener('resize', this.onResize)
 	}
 
 	/**
@@ -200,7 +192,10 @@ export default class BeforeAfter {
 	 * On resize event
 	 */
 	onResize() {
-		this.resize()
+		this.heightElement = parseInt(this.elements.container.offsetHeight)
+		this.widthElement = parseInt(this.elements.container.offsetWidth)
+		this.applyStyles()
+		this.goTo(this.options.start)
 	}
 
 	/**
@@ -210,7 +205,6 @@ export default class BeforeAfter {
 		this.getUserEventsToTrack().forEach((event) => {
 			this.elements.container.removeEventListener(event, this.onMove)
 		})
-
 		window.removeEventListener('resize', this.onResize)
 	}
 
@@ -227,36 +221,6 @@ export default class BeforeAfter {
 	}
 
 	/**
-	 * Update position on resize event
-	 */
-	resize() {
-		let valueMoveCSS = 0
-		let valueMoveTransform = null
-
-		this.heightElement = parseInt(this.elements.container.offsetHeight)
-		this.widthElement = parseInt(this.elements.container.offsetWidth)
-
-		if (this.options.orientation === 'horizontal') {
-			const beforeAfterItems = [...this.elements.container.querySelectorAll('.active')]
-			beforeAfterItems.forEach((item) => {
-				item.style.position = 'absolute'
-				item.style.top = '0px'
-				item.style.width = this.widthElement
-			})
-
-			valueMoveCSS = this.elements.last.offsetLeft
-			valueMoveTransform = `${valueMoveCSS}px, 0`
-		} else if (this.options.orientation === 'vertical') {
-			valueMoveCSS = this.elements.last.offsetTop
-			valueMoveTransform = `0, ${valueMoveCSS}px`
-		}
-
-		if (this.options.cursor) {
-			this.cursor.style.transform = `translate(${valueMoveTransform}) translateZ(0)`
-		}
-	}
-
-	/**
 	 * Move images and cursor on user events
 	 * @param {Object} e Object from event listener
 	 */
@@ -266,7 +230,6 @@ export default class BeforeAfter {
 		// If user hover during animation, clear timer and stop animate
 		if (this.timerGoTo !== null && !this.timerCleaned) {
 			clearTimeout(this.timerGoTo)
-			clearTimeout(this.timerGoToAfter)
 			if (this.options.cursor) {
 				this.updateCursor()
 			}
@@ -285,17 +248,17 @@ export default class BeforeAfter {
 
 		if (this.options.orientation === 'horizontal') {
 			valueMoveCSS = parseInt(pageX - elementBoundingClientRect.x)
-			valueMoveTransform = valueMoveCSS + 'px, 0px'
+			valueMoveTransform = `${valueMoveCSS}px, 0, 0`
 			valueMovePicture = this.widthElement - valueMoveCSS
 		} else if (this.options.orientation === 'vertical') {
 			valueMoveCSS = parseInt(pageY - elementBoundingClientRect.y)
-			valueMoveTransform = '0px, ' + valueMoveCSS + 'px'
+			valueMoveTransform = `0, ${valueMoveCSS}px, 0`
 			valueMovePicture = this.heightElement - valueMoveCSS
 		}
 
 		// If cursor enabled, apply new position
 		if (this.options.cursor) {
-			this.cursor.style.transform = `translate(${valueMoveTransform}) translateZ(0)`
+			this.cursor.style.transform = `translate3d(${valueMoveTransform})`
 		}
 
 		// Update new position on image
@@ -312,60 +275,44 @@ export default class BeforeAfter {
 	 * @param {Interger|Float} percentage Percentage of offset
 	 */
 	goTo(percentage) {
-		this.timerGoTo = setTimeout(() => {
-			let valueMoveDependOnElement = 0
-			let valueMove = 0
-			let valueCursorTransform = 0
-
-			if (this.options.orientation === 'horizontal') {
-				valueMoveDependOnElement = this.widthElement - (this.widthElement * percentage) / 100
-				valueMove = (this.widthElement * percentage) / 100
-			} else if (this.options.orientation === 'vertical') {
-				valueMoveDependOnElement = this.heightElement - (this.heightElement * percentage) / 100
-				valueMove = (this.heightElement * percentage) / 100
-			}
-
-			this.elements.last.style[this.data[this.options.orientation].widthHeight] = `${valueMove}px`
-
-			if (this.options.cursor) {
-				if (this.options.orientation === 'horizontal') {
-					valueCursorTransform = valueMoveDependOnElement + 'px, 0'
-					this.cursor.style[this.data[this.options.orientation].attrToAnimate] = 'auto'
-				} else if (this.options.orientation === 'vertical') {
-					valueCursorTransform = '0, ' + valueMoveDependOnElement + 'px'
-					this.cursor.style[this.data[this.options.orientation].attrToAnimate] = 0
-				}
-
-				this.cursor.style.transform = `translate(${valueCursorTransform}) translateZ(0)`
-			}
-
-			// Update current position available on instance
-			this.position = valueMoveDependOnElement
-		}, 100)
-	}
-
-	/**
-	 * Reset the BeforeAfter item (image and cursor)
-	 */
-	reset() {
-		this.cursor.style.transform = 'none'
+		let valueMoveDependOnElement = 0
+		let valueMove = 0
+		let valueCursorTransform = 0
 
 		if (this.options.orientation === 'horizontal') {
-			this.elements.last.style.width = '100%'
-			this.cursor.style.left = '0px'
-		} else {
-			this.elements.last.style.height = '100%'
-			this.cursor.style.top = '0px'
+			valueMoveDependOnElement = this.widthElement - (this.widthElement * percentage) / 100
+			valueMove = (this.widthElement * percentage) / 100
+		} else if (this.options.orientation === 'vertical') {
+			valueMoveDependOnElement = this.heightElement - (this.heightElement * percentage) / 100
+			valueMove = (this.heightElement * percentage) / 100
 		}
+
+		this.elements.last.style[this.data[this.options.orientation].widthHeight] = `${valueMove}px`
+
+		if (this.options.cursor) {
+			if (this.options.orientation === 'horizontal') {
+				valueCursorTransform = `${valueMoveDependOnElement}px, 0, 0`
+				this.cursor.style[this.data[this.options.orientation].attrToAnimate] = 'auto'
+			} else if (this.options.orientation === 'vertical') {
+				valueCursorTransform = `0, ${valueMoveDependOnElement}px, 0`
+				this.cursor.style[this.data[this.options.orientation].attrToAnimate] = 0
+			}
+
+			this.cursor.style.transform = `translate3d(${valueCursorTransform})`
+		}
+
+		// Update current position available on instance
+		this.position = valueMoveDependOnElement
 	}
 
 	/**
 	 * Remove the BeforeAfter item
 	 */
 	destroy() {
-		this.reset()
 		this.cursor.remove()
 		this.removeEvents()
 		this.removeImageWrappers()
+		this.timerGoTo = null
+		this.timerCleaned = false
 	}
 }
