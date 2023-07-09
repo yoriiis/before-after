@@ -31,7 +31,7 @@ npm install before-after --save
 ```
 
 ```bash
-yarn add validate-target --dev
+yarn add before-after --dev
 ```
 
 ## How it works
