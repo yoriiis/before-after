@@ -18,6 +18,8 @@ npm install before-after --save-dev
 yarn add before-after --dev
 ```
 
+> **Warning** before-after@3 is ESM.
+>
 > **Note** Minimum supported `Node.js` version is `16.20.0`.
 
 ### CDN

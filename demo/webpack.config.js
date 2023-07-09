@@ -28,7 +28,7 @@ export default function webpackConfig(env, argv) {
 			rules: [
 				{
 					test: /\.js$/,
-					include: [resolveApp('demo'), resolveApp('dist')],
+					include: [resolveApp('demo'), resolveApp('src')],
 					use: [
 						{
 							loader: 'babel-loader'
@@ -37,7 +37,7 @@ export default function webpackConfig(env, argv) {
 				},
 				{
 					test: /\.css$/,
-					include: [resolveApp('demo'), resolveApp('dist')],
+					include: [resolveApp('demo'), resolveApp('src')],
 					use: [
 						MiniCssExtractPlugin.loader,
 						{
@@ -84,7 +84,6 @@ export default function webpackConfig(env, argv) {
 				filename: 'styles/[name].css',
 				chunkFilename: 'styles/[name].css'
 			}),
-			new webpack.optimize.ModuleConcatenationPlugin(),
 			new HtmlWebpackPlugin({
 				filename: 'index.html',
 				template: resolveApp('demo/index.html'),
