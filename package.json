@@ -10,7 +10,7 @@
 	"bugs": "https://github.com/yoriiis/before-after.js/issues",
 	"repository": "https://github.com/yoriiis/before-after.js.git",
 	"license": "MIT",
-	"author": "Joris DANIEL",
+	"author": "Yoriiis",
 	"type": "module",
 	"exports": "./src/index.js",
 	"files": [
