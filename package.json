@@ -34,7 +34,6 @@
 		"dev": "tsc --noEmit --watch",
 		"test": "echo \"No test specified\" && exit 0"
 	},
-	"prettier": "./config/prettier.config.cjs",
 	"devDependencies": {
 		"@biomejs/biome": "^2.3.4",
 		"postcss": "^8.5.6",
