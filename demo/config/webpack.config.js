@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import CopyWebpackPlugin from 'copy-webpack-plugin'
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
@@ -52,13 +53,6 @@ export default function webpackConfig(_env, argv) {
 							}
 						}
 					]
-				},
-				{
-					test: /\.jpg/,
-					type: 'asset/resource',
-					generator: {
-						filename: 'images/[name][ext]'
-					}
 				}
 			]
 		},
@@ -88,6 +82,15 @@ export default function webpackConfig(_env, argv) {
 				filename: 'index.html',
 				template: resolveApp('src/index.html'),
 				chunks: ['demo']
+			}),
+			new CopyWebpackPlugin({
+				patterns: [
+					{
+						from: resolveApp('src/images'),
+						to: 'images',
+						noErrorOnMissing: true
+					}
+				]
 			})
 		],
 		stats: {
