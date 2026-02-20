@@ -12,5 +12,4 @@ jobs:
   build:
     uses: yoriiis/actions/.github/workflows/test-and-build.yml@main
     with:
-      node-version: 18
       command-build: npm run build && npm run build:example

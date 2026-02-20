@@ -1,34 +1,34 @@
-import fs from 'fs'
-import path from 'path'
-import webpack from 'webpack'
-import MiniCssExtractPlugin from 'mini-css-extract-plugin'
-import TerserPlugin from 'terser-webpack-plugin'
+import fs from 'node:fs'
+import path from 'node:path'
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
+import MiniCssExtractPlugin from 'mini-css-extract-plugin'
+import TerserPlugin from 'terser-webpack-plugin'
+import webpack from 'webpack'
 
 const appDirectory = fs.realpathSync(process.cwd())
 const resolveApp = (relativePath) => path.resolve(appDirectory, relativePath)
 
-export default function webpackConfig(env, argv) {
+export default function webpackConfig(_env, argv) {
 	const isProduction = argv.mode === 'production'
 
 	const config = {
 		entry: {
-			demo: resolveApp('demo/config.js')
+			demo: resolveApp('src/config.js')
 		},
 		watchOptions: {
 			ignored: /node_modules/
 		},
 		devtool: isProduction ? false : 'source-map',
 		output: {
-			path: resolveApp('demo/dist/'),
+			path: resolveApp('dist/'),
 			filename: 'scripts/[name].js'
 		},
 		module: {
 			rules: [
 				{
 					test: /\.js$/,
-					include: [resolveApp('demo'), resolveApp('src')],
+					include: [resolveApp('src')],
 					use: [
 						{
 							loader: 'babel-loader'
@@ -37,7 +37,7 @@ export default function webpackConfig(env, argv) {
 				},
 				{
 					test: /\.css$/,
-					include: [resolveApp('demo'), resolveApp('src')],
+					include: [resolveApp('src')],
 					use: [
 						MiniCssExtractPlugin.loader,
 						{
@@ -67,13 +67,13 @@ export default function webpackConfig(env, argv) {
 		},
 		devServer: {
 			static: {
-				directory: resolveApp('demo')
+				directory: resolveApp('src')
 			},
 			historyApiFallback: true,
 			port: 3000,
 			compress: true,
 			hot: true,
-			open: true,
+			open: false,
 			headers: {
 				'Cache-Control': 'no-store'
 			}
@@ -86,7 +86,7 @@ export default function webpackConfig(env, argv) {
 			}),
 			new HtmlWebpackPlugin({
 				filename: 'index.html',
-				template: resolveApp('demo/index.html'),
+				template: resolveApp('src/index.html'),
 				chunks: ['demo']
 			})
 		],
