@@ -6,11 +6,11 @@
 		"slider",
 		"before after"
 	],
-	"homepage": "https://github.com/yoriiis/before-after.js",
-	"bugs": "https://github.com/yoriiis/before-after.js/issues",
+	"homepage": "https://github.com/yoriiis/before-after",
+	"bugs": "https://github.com/yoriiis/before-after/issues",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/yoriiis/before-after.js.git"
+		"url": "git+https://github.com/yoriiis/before-after.git"
 	},
 	"license": "MIT",
 	"author": "Yoriiis",
