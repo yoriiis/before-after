@@ -1,20 +1,54 @@
-const DEFAULT_OPTIONS = {
+interface BeforeAfterOptions {
+	cursor: boolean
+	orientation: 'horizontal' | 'vertical'
+	start: number
+	direction?: 'rtl' | 'btt'
+}
+
+type BeforeAfterUserOptions = Partial<BeforeAfterOptions>
+
+const DEFAULT_OPTIONS: BeforeAfterOptions = {
 	cursor: true,
 	orientation: 'horizontal',
 	start: 50
 }
 
 export default class BeforeAfter {
+	private options: BeforeAfterOptions
+	private hasTouch: boolean
+	private hasMSPointer: boolean
+	private elements: {
+		container: HTMLElement | null
+		first: HTMLElement | null
+		last: HTMLElement | null
+	}
+	private data: Record<
+		'horizontal' | 'vertical',
+		{
+			widthHeight: 'height' | 'width'
+			attrToAnimate: 'top' | 'left'
+		}
+	>
+	private heightElement: number | null
+	private widthElement: number | null
+	private timerGoTo: ReturnType<typeof setTimeout> | null
+	private timerCleaned: boolean
+	private cursor: HTMLElement | null
+	private position: number | null
 	/**
-	 * @param {options}
+	 * @param options
 	 */
-	constructor(element, options = {}) {
+	constructor(element: HTMLElement | null, options: BeforeAfterUserOptions = {}) {
 		this.options = { ...DEFAULT_OPTIONS, ...options }
 
 		// Detect touch devices
+		const navigatorAny = window.navigator as any
+
 		this.hasTouch =
-			'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0
-		this.hasMSPointer = window.navigator.msPointerEnabled
+			'ontouchstart' in window ||
+			navigatorAny.maxTouchPoints > 0 ||
+			navigatorAny.msMaxTouchPoints > 0
+		this.hasMSPointer = !!navigatorAny.msPointerEnabled
 
 		if (element === null) {
 			console.warn('BeforeAfter::Option element is missing')
@@ -40,6 +74,7 @@ export default class BeforeAfter {
 		this.timerGoTo = null
 		this.timerCleaned = false
 		this.cursor = null
+		this.position = null
 
 		this.onResize = this.onResize.bind(this)
 		this.onMove = this.onMove.bind(this)
@@ -51,12 +86,16 @@ export default class BeforeAfter {
 	 * Create the BeforeAfter item
 	 */
 	init() {
+		if (!this.elements.container) {
+			return
+		}
+
 		this.addImageWrapper()
 
-		this.heightElement = parseInt(this.elements.container.offsetHeight)
-		this.widthElement = parseInt(this.elements.container.offsetWidth)
-		this.elements.first = this.elements.container.firstElementChild
-		this.elements.last = this.elements.container.lastElementChild
+		this.heightElement = parseInt(String(this.elements.container.offsetHeight), 10)
+		this.widthElement = parseInt(String(this.elements.container.offsetWidth), 10)
+		this.elements.first = this.elements.container.firstElementChild as HTMLElement | null
+		this.elements.last = this.elements.container.lastElementChild as HTMLElement | null
 
 		this.applyStyles()
 
@@ -73,18 +112,35 @@ export default class BeforeAfter {
 	 * Build the cursor item if it is not exist
 	 */
 	buildCursor() {
+		const container = this.elements.container
+		if (!container) {
+			return
+		}
+
 		const htmlCursor = `<div class='beforeafter-cursor'></div>`
-		this.elements.container.insertAdjacentHTML('beforeend', htmlCursor)
+		container.insertAdjacentHTML('beforeend', htmlCursor)
 	}
 
 	/**
 	 * Update the cursor position on move events
 	 */
 	updateCursor() {
-		this.cursor = this.elements.container.parentNode.querySelector('.beforeafter-cursor')
+		if (!this.elements.container) {
+			return
+		}
+
+		const parentNode = this.elements.container.parentNode as ParentNode | null
+		if (!parentNode) {
+			return
+		}
+
+		this.cursor = parentNode.querySelector('.beforeafter-cursor') as HTMLElement | null
+		if (!this.cursor) {
+			return
+		}
 
 		this.cursor.style.position = 'absolute'
-		this.cursor.style.zIndex = 10
+		this.cursor.style.zIndex = '10'
 		this.cursor.style.backgroundColor = '#000'
 		this.cursor.style.overflow = 'hidden'
 		this.cursor.style.display = 'block'
@@ -114,21 +170,45 @@ export default class BeforeAfter {
 	 * Wrap all images with a wrapper
 	 */
 	addImageWrapper() {
-		const pictures = [...this.elements.container.querySelectorAll('img')]
+		if (!this.elements.container) {
+			return
+		}
+
+		const pictures = Array.from(
+			this.elements.container.querySelectorAll('img')
+		) as HTMLImageElement[]
 		pictures.forEach((picture) => {
 			const wrapper = document.createElement('div')
 			wrapper.classList.add('beforeafter-item')
-			picture.parentNode.insertBefore(wrapper, picture)
+			const parentNode = picture.parentNode
+			if (!parentNode) {
+				return
+			}
+			parentNode.insertBefore(wrapper, picture)
 			wrapper.appendChild(picture)
 		})
 	}
 
 	applyStyles() {
-		this.elements.last.style.zIndex = 1
+		if (!this.elements.container || !this.elements.last || this.widthElement === null) {
+			return
+		}
 
-		const items = [...this.elements.container.querySelectorAll('.beforeafter-item')]
+		const last = this.elements.last
+		if (!last) {
+			return
+		}
+
+		last.style.zIndex = '1'
+
+		const items = Array.from(
+			this.elements.container.querySelectorAll('.beforeafter-item')
+		) as HTMLElement[]
 		items.forEach((item) => {
-			const image = item.querySelector('img')
+			const image = item.querySelector('img') as HTMLImageElement | null
+			if (!image) {
+				return
+			}
 
 			image.style.position = 'absolute'
 			image.style.width = `${this.widthElement}px`
@@ -141,17 +221,17 @@ export default class BeforeAfter {
 				item.style.top = '0px'
 				item.style.width = `${this.widthElement}px`
 
-				this.elements.last.style.top = '0px'
-				this.elements.last.style.left = 'auto'
-				this.elements.last.style.right = '0'
+				last.style.top = '0px'
+				last.style.left = 'auto'
+				last.style.right = '0'
 
 				image.style.right = '0px'
 			} else if (this.options.orientation === 'vertical') {
 				item.style.left = '0px'
 				item.style.width = '100%'
 
-				this.elements.last.style.bottom = '0'
-				this.elements.last.style.top = 'auto'
+				last.style.bottom = '0'
+				last.style.top = 'auto'
 
 				image.style.bottom = '0px'
 			}
@@ -162,11 +242,18 @@ export default class BeforeAfter {
 	 * Remove wrapper on each images
 	 */
 	removeImageWrappers() {
-		const items = [...this.elements.container.querySelectorAll('img')]
+		if (!this.elements.container) {
+			return
+		}
+
+		const items = Array.from(this.elements.container.querySelectorAll('img')) as HTMLImageElement[]
 		items.forEach((item) => {
-			const parentNode = item.parentNode
+			const parentNode = item.parentNode as Element | null
 			item.removeAttribute('style')
-			parentNode.replaceWith(...parentNode.childNodes)
+			if (!parentNode || !parentNode.parentNode) {
+				return
+			}
+			parentNode.parentNode.replaceChild(item, parentNode)
 		})
 	}
 
@@ -174,17 +261,22 @@ export default class BeforeAfter {
 	 * Add event listeners on move and resize
 	 */
 	addEvents() {
+		const container = this.elements.container
+		if (!container) {
+			return
+		}
+
 		this.getUserEventsToTrack().forEach((event) => {
-			this.elements.container.addEventListener(event, this.onMove)
+			container.addEventListener(event, this.onMove as EventListener)
 		})
 		window.addEventListener('resize', this.onResize)
 	}
 
 	/**
 	 * On move event
-	 * @param {Event} e Event data
+	 * @param e Event data
 	 */
-	onMove(e) {
+	onMove(e: MouseEvent | TouchEvent | PointerEvent) {
 		this.move(e)
 	}
 
@@ -192,8 +284,13 @@ export default class BeforeAfter {
 	 * On resize event
 	 */
 	onResize() {
-		this.heightElement = parseInt(this.elements.container.offsetHeight)
-		this.widthElement = parseInt(this.elements.container.offsetWidth)
+		const container = this.elements.container
+		if (!container) {
+			return
+		}
+
+		this.heightElement = parseInt(String(container.offsetHeight), 10)
+		this.widthElement = parseInt(String(container.offsetWidth), 10)
 		this.applyStyles()
 		this.goTo(this.options.start)
 	}
@@ -202,8 +299,13 @@ export default class BeforeAfter {
 	 * Remove event listeners on move and resize
 	 */
 	removeEvents() {
+		const container = this.elements.container
+		if (!container) {
+			return
+		}
+
 		this.getUserEventsToTrack().forEach((event) => {
-			this.elements.container.removeEventListener(event, this.onMove)
+			container.removeEventListener(event, this.onMove as EventListener)
 		})
 		window.removeEventListener('resize', this.onResize)
 	}
@@ -212,7 +314,7 @@ export default class BeforeAfter {
 	 * Detect which events to track depending on the capabilities of the device
 	 * @returns {Array} with the list of events
 	 */
-	getUserEventsToTrack() {
+	getUserEventsToTrack(): string[] {
 		return this.hasTouch
 			? this.hasMSPointer
 				? ['pointerstart', 'MSPointerMove']
@@ -222,9 +324,13 @@ export default class BeforeAfter {
 
 	/**
 	 * Move images and cursor on user events
-	 * @param {Object} e Object from event listener
+	 * @param e Object from event listener
 	 */
-	move(e) {
+	move(e: MouseEvent | TouchEvent | PointerEvent) {
+		if (!this.elements.container || this.heightElement === null || this.widthElement === null) {
+			return
+		}
+
 		e.preventDefault()
 
 		// If user hover during animation, clear timer and stop animate
@@ -236,35 +342,39 @@ export default class BeforeAfter {
 			this.timerCleaned = true
 		}
 
-		let valueMoveTransform = 0
+		let valueMoveTransform = ''
 		let valueMoveCSS = 0
 		let valueMovePicture = 0
 		let pageX = 0
 		let pageY = 0
 
-		pageX = this.hasTouch ? e.touches[0].pageX : this.hasMSPointer ? e.pageX : e.pageX
-		pageY = this.hasTouch ? e.touches[0].pageY : this.hasMSPointer ? e.pageY : e.pageY
+		const touchEvent = e as TouchEvent
+		const mouseEvent = e as MouseEvent
+
+		pageX = this.hasTouch ? touchEvent.touches[0].pageX : mouseEvent.pageX
+		pageY = this.hasTouch ? touchEvent.touches[0].pageY : mouseEvent.pageY
 		const elementBoundingClientRect = this.elements.container.getBoundingClientRect()
 
 		if (this.options.orientation === 'horizontal') {
-			valueMoveCSS = parseInt(pageX - elementBoundingClientRect.x)
+			valueMoveCSS = parseInt(String(pageX - elementBoundingClientRect.x), 10)
 			valueMoveTransform = `${valueMoveCSS}px, 0, 0`
 			valueMovePicture = this.widthElement - valueMoveCSS
 		} else if (this.options.orientation === 'vertical') {
-			valueMoveCSS = parseInt(pageY - elementBoundingClientRect.y)
+			valueMoveCSS = parseInt(String(pageY - elementBoundingClientRect.y), 10)
 			valueMoveTransform = `0, ${valueMoveCSS}px, 0`
 			valueMovePicture = this.heightElement - valueMoveCSS
 		}
 
 		// If cursor enabled, apply new position
-		if (this.options.cursor) {
+		if (this.options.cursor && this.cursor) {
 			this.cursor.style.transform = `translate3d(${valueMoveTransform})`
 		}
 
 		// Update new position on image
-		this.elements.last.style[
-			this.data[this.options.orientation].widthHeight
-		] = `${valueMovePicture}px`
+		if (this.elements.last) {
+			this.elements.last.style[this.data[this.options.orientation].widthHeight] =
+				`${valueMovePicture}px`
+		}
 
 		// Update current position available on instance
 		this.position = valueMoveCSS
@@ -272,12 +382,21 @@ export default class BeforeAfter {
 
 	/**
 	 * Move the animation of the image and cursor to a specific position
-	 * @param {Interger|Float} percentage Percentage of offset
+	 * @param percentage Percentage of offset
 	 */
-	goTo(percentage) {
+	goTo(percentage: number) {
+		if (
+			!this.elements.container ||
+			this.heightElement === null ||
+			this.widthElement === null ||
+			!this.elements.last
+		) {
+			return
+		}
+
 		let valueMoveDependOnElement = 0
 		let valueMove = 0
-		let valueCursorTransform = 0
+		let valueCursorTransform = ''
 
 		if (this.options.orientation === 'horizontal') {
 			valueMoveDependOnElement = this.widthElement - (this.widthElement * percentage) / 100
@@ -289,13 +408,13 @@ export default class BeforeAfter {
 
 		this.elements.last.style[this.data[this.options.orientation].widthHeight] = `${valueMove}px`
 
-		if (this.options.cursor) {
+		if (this.options.cursor && this.cursor) {
 			if (this.options.orientation === 'horizontal') {
 				valueCursorTransform = `${valueMoveDependOnElement}px, 0, 0`
 				this.cursor.style[this.data[this.options.orientation].attrToAnimate] = 'auto'
 			} else if (this.options.orientation === 'vertical') {
 				valueCursorTransform = `0, ${valueMoveDependOnElement}px, 0`
-				this.cursor.style[this.data[this.options.orientation].attrToAnimate] = 0
+				this.cursor.style[this.data[this.options.orientation].attrToAnimate] = '0'
 			}
 
 			this.cursor.style.transform = `translate3d(${valueCursorTransform})`
@@ -309,7 +428,7 @@ export default class BeforeAfter {
 	 * Remove the BeforeAfter item
 	 */
 	destroy() {
-		this.cursor.remove()
+		this.cursor?.remove()
 		this.removeEvents()
 		this.removeImageWrappers()
 		this.timerGoTo = null

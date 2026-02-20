@@ -5,11 +5,16 @@
 		}
 	],
 	"settings": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode",
-		"[javascript][postcss][html][markdown][json]": {
+		"editor.defaultFormatter": "biomejs.biome",
+		"[javascript][typescript][postcss][html][markdown][json]": {
 			"editor.formatOnSave": true,
 			"editor.tabSize": 4,
 			"editor.rulers": [100]
+		},
+		"[markdown][html]": {
+			"editor.formatOnSave": true,
+			"editor.defaultFormatter": "esbenp.prettier-vscode",
+			"editor.wordWrap": "off"
 		},
 		"[yaml]": {
 			"editor.tabSize": 2,
@@ -17,18 +22,17 @@
 			"editor.insertSpaces": true,
 			"editor.autoIndent": "none"
 		},
-		"files.associations": {
-			"*.css": "postcss",
-			"*.html": "html",
-			"*.ts": "typescript",
-			"*.json": "json",
-			"*.yaml": "yaml",
-			"*.yml": "yaml"
+		"[javascript][typescript][css][json]": {
+			"editor.codeActionsOnSave": {
+				"quickfix.biome": "explicit",
+				"source.organizeImports.biome": "explicit"
+			}
 		},
 		"files.trimTrailingWhitespace": true,
 		"search.exclude": {
 			"**/node_modules": true
 		},
+		"prettier.configPath": "./config/prettier.config.cjs",
 		"files.eol": "\n"
 	},
 	"extensions": {
@@ -37,5 +41,5 @@
 			"esbenp.prettier-vscode",
 			"dbaeumer.vscode-eslint"
 		]
-	},
+	}
 }

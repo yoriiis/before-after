@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 4.0.0
+
+### ⚠️ Breaking changes
+
+- Updates Node.js and migrate to TypeScript ([#19](https://github.com/yoriiis/before-after/pull/19))
+  - Minimum supported `Node.js` version is `>=22`
+  - Updates other packages
+
 ## 3.0.0
 
 ### ⚠️ Breaking changes
