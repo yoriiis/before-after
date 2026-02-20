@@ -10,6 +10,6 @@ on:
 
 jobs:
   build:
-    uses: yoriiis/actions/.github/workflows/test-and-build.yml@main
+    uses: yoriiis/actions/.github/workflows/test-and-build-root-demo.yml@main
     with:
-      command-build: npm run build && npm run build:example
+      working-directory-demo: ./demo

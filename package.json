@@ -8,15 +8,24 @@
 	],
 	"homepage": "https://github.com/yoriiis/before-after.js",
 	"bugs": "https://github.com/yoriiis/before-after.js/issues",
-	"repository": "https://github.com/yoriiis/before-after.js.git",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/yoriiis/before-after.js.git"
+	},
 	"license": "MIT",
 	"author": "Yoriiis",
 	"type": "module",
-	"exports": "./lib/index.js",
+	"exports": {
+		".": {
+			"types": "./types/index.d.ts",
+			"import": "./lib/index.js"
+		}
+	},
 	"main": "./lib/index.js",
-	"types": "./lib/index.d.ts",
+	"types": "./types/index.d.ts",
 	"files": [
-		"lib"
+		"lib",
+		"types"
 	],
 	"scripts": {
 		"biome:check": "biome check",

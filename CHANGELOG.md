@@ -4,7 +4,7 @@
 
 ### ⚠️ Breaking changes
 
-- Updates Node.js ([#19](https://github.com/yoriiis/before-after/pull/19))
+- Updates Node.js and migrate to TypeScript ([#19](https://github.com/yoriiis/before-after/pull/19))
   - Minimum supported `Node.js` version is `>=22`
   - Updates other packages
 
